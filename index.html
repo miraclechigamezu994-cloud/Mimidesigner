@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mimi Designer</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Roboto+Mono:wght@400;700&family=Pacifico&family=Cinzel:wght@600&display=swap" rel="stylesheet">
+    <title>Mimi Designer Pro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Roboto+Mono:wght@400;700&family=Pacifico&family=Cinzel:wght@600&family=Bangers&family=Orbitron:wght@500;700&family=Sacramento&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         :root {
             --primary: #6366f1;
@@ -70,6 +71,9 @@
             cursor: pointer;
             transition: background 0.2s, transform 0.1s;
             font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
 
         .btn:hover {
@@ -106,13 +110,14 @@
             flex-direction: column;
             align-items: center;
             padding: 15px 0;
-            gap: 15px;
+            gap: 10px;
             z-index: 10;
+            overflow-y: auto;
         }
 
         .tool-btn {
-            width: 50px;
-            height: 50px;
+            width: 55px;
+            height: 55px;
             border-radius: 12px;
             border: none;
             background: transparent;
@@ -121,9 +126,10 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 4px;
+            gap: 3px;
             cursor: pointer;
             transition: all 0.2s;
+            flex-shrink: 0;
         }
 
         .tool-btn svg {
@@ -133,7 +139,7 @@
         }
 
         .tool-btn span {
-            font-size: 0.65rem;
+            font-size: 0.6rem;
             font-weight: 500;
         }
 
@@ -144,13 +150,13 @@
 
         /* Tool Panels Drawer */
         .tool-panel {
-            width: 280px;
+            width: 300px;
             background: var(--bg-panel);
             border-right: 1px solid var(--border-color);
             display: none;
             flex-direction: column;
             padding: 20px;
-            gap: 20px;
+            gap: 18px;
             z-index: 5;
             overflow-y: auto;
         }
@@ -164,32 +170,52 @@
             font-weight: 600;
             border-bottom: 1px solid var(--border-color);
             padding-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .control-group {
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 6px;
         }
 
         .control-group label {
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             color: var(--text-muted);
             font-weight: 500;
         }
 
-        input[type="text"], select {
+        input[type="text"], select, input[type="file"] {
             background: var(--bg-dark);
             border: 1px solid var(--border-color);
             color: var(--text-main);
             padding: 10px;
             border-radius: 8px;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             outline: none;
+            width: 100%;
         }
 
         input[type="text"]:focus, select:focus {
             border-color: var(--primary);
+        }
+
+        .file-upload-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .file-upload-wrapper input[type=file] {
+            font-size: 100px;
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            cursor: pointer;
         }
 
         .range-slider {
@@ -203,16 +229,23 @@
             accent-color: var(--primary);
         }
 
+        .value-display {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            width: 35px;
+            text-align: right;
+        }
+
         /* Colors Grid */
         .color-grid {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
-            gap: 10px;
+            gap: 8px;
         }
 
         .color-swatch {
-            width: 40px;
-            height: 40px;
+            width: 38px;
+            height: 38px;
             border-radius: 8px;
             cursor: pointer;
             border: 2px solid transparent;
@@ -232,13 +265,16 @@
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 10px;
+            max-height: 320px;
+            overflow-y: auto;
+            padding-right: 4px;
         }
 
         .preset-card {
             background: var(--bg-dark);
             border: 1px solid var(--border-color);
             border-radius: 10px;
-            height: 80px;
+            height: 85px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -246,8 +282,9 @@
             cursor: pointer;
             transition: border-color 0.2s, background 0.2s;
             gap: 6px;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             color: var(--text-muted);
+            padding: 8px;
         }
 
         .preset-card:hover {
@@ -257,12 +294,13 @@
         }
 
         .preset-card svg {
-            width: 28px;
-            height: 28px;
+            width: 30px;
+            height: 30px;
             fill: currentColor;
+            stroke: currentColor;
         }
 
-        /* Canvas Workspace */
+        /* Workspace Canvas */
         .workspace {
             flex: 1;
             background: #090d16;
@@ -271,11 +309,12 @@
             justify-content: center;
             position: relative;
             overflow: hidden;
+            padding: 20px;
         }
 
         .canvas-container {
-            width: 500px;
-            height: 500px;
+            width: 420px;
+            height: 420px;
             background: #ffffff;
             border-radius: 12px;
             box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.5), 0 8px 10px -6px rgb(0 0 0 / 0.5);
@@ -286,16 +325,17 @@
             justify-content: center;
         }
 
-        /* Movable/Resizable Canvas Elements */
+        /* Movable/Resizable/Rotatable Canvas Elements */
         .canvas-element {
             position: absolute;
             cursor: move;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            padding: 8px;
+            padding: 6px;
             border: 2px dashed transparent;
             transition: border 0.2s;
+            transform-origin: center center;
         }
 
         .canvas-element:hover, .canvas-element.selected {
@@ -308,36 +348,87 @@
             pointer-events: none;
         }
 
+        .canvas-element img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            pointer-events: none;
+        }
+
         .canvas-text {
             font-size: 2rem;
             font-weight: 600;
             white-space: nowrap;
         }
 
-        /* Responsive adjustments for mobile/smaller screens */
+        /* Element action toolbar popup when selected */
+        .element-action-bar {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid var(--border-color);
+            padding: 6px 12px;
+            border-radius: 20px;
+            display: none;
+            gap: 10px;
+            z-index: 100;
+            align-items: center;
+            backdrop-filter: blur(5px);
+        }
+
+        .element-action-bar.active {
+            display: flex;
+        }
+
+        .action-icon-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-main);
+            cursor: pointer;
+            font-size: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 8px;
+            border-radius: 6px;
+        }
+
+        .action-icon-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--primary);
+        }
+
+        .action-icon-btn.delete:hover {
+            color: #ef4444;
+        }
+
+        /* Responsive adjustments for mobile */
         @media (max-width: 768px) {
             .main-container {
                 flex-direction: column-reverse;
             }
             .sidebar {
                 width: 100vw;
-                height: 70px;
+                height: 75px;
                 flex-direction: row;
-                justify-content: space-around;
+                justify-content: flex-start;
+                overflow-x: auto;
                 padding: 0 10px;
                 border-right: none;
                 border-top: 1px solid var(--border-color);
             }
             .tool-panel {
                 width: 100vw;
-                height: calc(100vh - 130px);
+                height: calc(100vh - 135px);
                 position: absolute;
-                bottom: 70px;
+                bottom: 75px;
                 left: 0;
             }
             .canvas-container {
-                width: 320px;
-                height: 320px;
+                width: 300px;
+                height: 300px;
             }
         }
     </style>
@@ -346,12 +437,15 @@
 
     <header>
         <div class="logo-title">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
             Mimi Designer
         </div>
         <div class="header-actions">
-            <button class="btn btn-outline" id="clear-btn">Clear All</button>
-            <button class="btn" id="export-btn">Export Design</button>
+            <button class="btn btn-outline" id="clear-btn">Clear</button>
+            <button class="btn" id="export-btn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+                Download PNG
+            </button>
         </div>
     </header>
 
@@ -362,56 +456,197 @@
                 <svg viewBox="0 0 24 24"><path d="M5 4v3h5.5v12h3V7H19V4H5z"/></svg>
                 <span>Text</span>
             </button>
-            <button class="tool-btn" data-target="colors-panel">
-                <svg viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9 0 2.12.74 4.07 1.97 5.61L4.35 19.4c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0l1.92-1.92C9.23 19.26 10.58 19.5 12 19.5c4.97 0 9-4.03 9-9s-4.03-9-9-9zm0 15c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6z"/></svg>
-                <span>Colors</span>
+            <button class="tool-btn" data-target="shapes-panel">
+                <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14z"/></svg>
+                <span>Shapes</span>
             </button>
             <button class="tool-btn" data-target="logos-panel">
                 <svg viewBox="0 0 24 24"><path d="M12 2L1 21h22L12 2zm0 3.99L19.53 19H4.47L12 5.99z"/></svg>
                 <span>Logos</span>
             </button>
-            <button class="tool-btn" data-target="shapes-panel">
-                <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14z"/></svg>
-                <span>Shapes</span>
+            <button class="tool-btn" data-target="apparel-panel">
+                <svg viewBox="0 0 24 24"><path d="M16 3l4 4-3 2v12H7V9l-3-2 4-4c1.5 1.5 3 2 5 2s3.5-.5 5-2z"/></svg>
+                <span>Clothes</span>
+            </button>
+            <button class="tool-btn" data-target="image-panel">
+                <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+                <span>Images</span>
+            </button>
+            <button class="tool-btn" data-target="colors-panel">
+                <svg viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9 0 2.12.74 4.07 1.97 5.61L4.35 19.4c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0l1.92-1.92C9.23 19.26 10.58 19.5 12 19.5c4.97 0 9-4.03 9-9s-4.03-9-9-9zm0 15c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6z"/></svg>
+                <span>Colors</span>
+            </button>
+            <button class="tool-btn" data-target="transform-panel">
+                <svg viewBox="0 0 24 24"><path d="M12 2v4m0 12v4M2 12h4m12 0h4m-3.17-6.83l-2.83 2.83m-8 8l-2.83 2.83m0-13.66l2.83 2.83m8 8l2.83 2.83"/></svg>
+                <span>Edit</span>
             </button>
         </div>
 
         <!-- 1. Text Panel -->
         <div class="tool-panel active" id="text-panel">
-            <div class="panel-title">Text Customization</div>
+            <div class="panel-title">Text & Typography</div>
             <div class="control-group">
-                <label>Add / Edit Text</label>
-                <input type="text" id="text-input" placeholder="Type your brand name..." value="Mimi Brand">
+                <label>Text Content</label>
+                <input type="text" id="text-input" placeholder="Type brand name..." value="Mimi Brand">
             </div>
             <div class="control-group">
-                <label>Font Style</label>
+                <label>Font Family</label>
                 <select id="font-select">
                     <option value="'Poppins', sans-serif">Modern Sans</option>
                     <option value="'Roboto Mono', monospace">Tech Mono</option>
-                    <option value="'Pacifico', cursive">Handwritten Script</option>
+                    <option value="'Pacifico', cursive">Script / Signature</option>
                     <option value="'Cinzel', serif">Luxury Serif</option>
+                    <option value="'Bangers', cursive">Comic / Bold</option>
+                    <option value="'Orbitron', sans-serif">Futuristic Tech</option>
+                    <option value="'Sacramento', cursive">Elegant Curve</option>
                 </select>
             </div>
             <div class="control-group">
                 <label>Font Size</label>
                 <div class="range-slider">
-                    <input type="range" id="font-size-range" min="12" max="72" value="32">
+                    <input type="range" id="font-size-range" min="12" max="90" value="32">
+                    <span class="value-display" id="val-font-size">32px</span>
                 </div>
             </div>
             <div class="control-group">
                 <label>Brightness / Opacity</label>
                 <div class="range-slider">
-                    <input type="range" id="text-opacity-range" min="0.2" max="1" step="0.1" value="1">
+                    <input type="range" id="text-opacity-range" min="0.1" max="1" step="0.05" value="1">
+                    <span class="value-display" id="val-opacity">100%</span>
                 </div>
             </div>
             <button class="btn" id="add-text-btn">Add Text to Canvas</button>
         </div>
 
-        <!-- 2. Colors Panel -->
+        <!-- 2. Shapes Panel (Expanded) -->
+        <div class="tool-panel" id="shapes-panel">
+            <div class="panel-title">Shapes, Lines & Outlines</div>
+            <div class="preset-grid">
+                <div class="preset-card" data-type="shape" data-svg='<svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" fill="none" stroke="currentColor" stroke-width="2"/></svg>'>
+                    <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+                    <span>Square Frame</span>
+                </div>
+                <div class="preset-card" data-type="shape" data-svg='<svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" fill="currentColor" opacity="0.8"/></svg>'>
+                    <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" fill="currentColor" opacity="0.8"/></svg>
+                    <span>Solid Box</span>
+                </div>
+                <div class="preset-card" data-type="shape" data-svg='<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/></svg>'>
+                    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+                    <span>Circle Ring</span>
+                </div>
+                <div class="preset-card" data-type="shape" data-svg='<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="currentColor" opacity="0.8"/></svg>'>
+                    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="currentColor" opacity="0.8"/></svg>
+                    <span>Solid Circle</span>
+                </div>
+                <div class="preset-card" data-type="shape" data-svg='<svg viewBox="0 0 24 24"><polygon points="12 2 22 20 2 20" fill="none" stroke="currentColor" stroke-width="2"/></svg>'>
+                    <svg viewBox="0 0 24 24"><polygon points="12 2 22 20 2 20" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+                    <span>Triangle</span>
+                </div>
+                <div class="preset-card" data-type="shape" data-svg='<svg viewBox="0 0 24 24"><polygon points="12 2 15 8 22 9 17 14 18 21 12 18 6 21 7 14 2 9 9 8" fill="none" stroke="currentColor" stroke-width="2"/></svg>'>
+                    <svg viewBox="0 0 24 24"><polygon points="12 2 15 8 22 9 17 14 18 21 12 18 6 21 7 14 2 9 9 8" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+                    <span>Star Outline</span>
+                </div>
+                <div class="preset-card" data-type="shape" data-svg='<svg viewBox="0 0 24 24"><polygon points="12 2 15 8 22 9 17 14 18 21 12 18 6 21 7 14 2 9 9 8" fill="currentColor"/></svg>'>
+                    <svg viewBox="0 0 24 24"><polygon points="12 2 15 8 22 9 17 14 18 21 12 18 6 21 7 14 2 9 9 8" fill="currentColor"/></svg>
+                    <span>Solid Star</span>
+                </div>
+                <div class="preset-card" data-type="shape" data-svg='<svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="currentColor"/></svg>'>
+                    <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="currentColor"/></svg>
+                    <span>Heart Shape</span>
+                </div>
+                <div class="preset-card" data-type="shape" data-svg='<svg viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12" stroke="currentColor" stroke-width="3"/></svg>'>
+                    <svg viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12" stroke="currentColor" stroke-width="3"/></svg>
+                    <span>Straight Line</span>
+                </div>
+                <div class="preset-card" data-type="shape" data-svg='<svg viewBox="0 0 24 24"><path d="M3 12 C 3 5, 21 5, 21 12" fill="none" stroke="currentColor" stroke-width="2"/></svg>'>
+                    <svg viewBox="0 0 24 24"><path d="M3 12 C 3 5, 21 5, 21 12" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+                    Curve Arc
+                </div>
+                <div class="preset-card" data-type="shape" data-svg='<svg viewBox="0 0 24 24"><path d="M12 2 L2 22 L22 22 Z" fill="none" stroke="currentColor" stroke-width="2"/></svg>'>
+                    <svg viewBox="0 0 24 24"><path d="M12 2 L2 22 L22 22 Z" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+                    <span>Pyramid</span>
+                </div>
+                <div class="preset-card" data-type="shape" data-svg='<svg viewBox="0 0 24 24"><polygon points="12 2, 22 8.5, 18.5 20.5, 5.5 20.5, 2 8.5" fill="none" stroke="currentColor" stroke-width="2"/></svg>'>
+                    <svg viewBox="0 0 24 24"><polygon points="12 2, 22 8.5, 18.5 20.5, 5.5 20.5, 2 8.5" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+                    <span>Pentagon</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. Logos Panel -->
+        <div class="tool-panel" id="logos-panel">
+            <div class="panel-title">Ready-Made Logos</div>
+            <div class="preset-grid">
+                <div class="preset-card" data-type="logo" data-svg='<svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" fill="currentColor"/></svg>'>
+                    <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" fill="currentColor"/></svg>
+                    <span>Tech Crown</span>
+                </div>
+                <div class="preset-card" data-type="logo" data-svg='<svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="currentColor"/></svg>'>
+                    <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="currentColor"/></svg>
+                    <span>Fashion Heart</span>
+                </div>
+                <div class="preset-card" data-type="logo" data-svg='<svg viewBox="0 0 24 24"><path d="M12 3L1 9l4 2.18v6L12 21l7-3.82v-6l2-1.09V17h2V9L12 3zm6.82 6L12 12.72 5.18 9 12 5.28 18.82 9z" fill="currentColor"/></svg>'>
+                    <svg viewBox="0 0 24 24"><path d="M12 3L1 9l4 2.18v6L12 21l7-3.82v-6l2-1.09V17h2V9L12 3zm6.82 6L12 12.72 5.18 9 12 5.28 18.82 9z" fill="currentColor"/></svg>
+                    <span>Layer Brand</span>
+                </div>
+                <div class="preset-card" data-type="logo" data-svg='<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93z" fill="currentColor"/></svg>'>
+                    <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93z" fill="currentColor"/></svg>
+                    <span>Global Globe</span>
+                </div>
+                <div class="preset-card" data-type="logo" data-svg='<svg viewBox="0 0 24 24"><path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.22.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.85 7h10.29l1.04 3H5.81l1.04-3zM19 17H5v-4.66l.12-.34h13.76l.12.34V17z" fill="currentColor"/></svg>'>
+                    <svg viewBox="0 0 24 24"><path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.22.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99z" fill="currentColor"/></svg>
+                    <span>Store / Shop</span>
+                </div>
+                <div class="preset-card" data-type="logo" data-svg='<svg viewBox="0 0 24 24"><path d="M12 3L2 12h3v8h14v-8h3L12 3zm0 3.84L17.16 11H6.84L12 6.84z" fill="currentColor"/></svg>'>
+                    <svg viewBox="0 0 24 24"><path d="M12 3L2 12h3v8h14v-8h3L12 3zm0 3.84L17.16 11H6.84L12 6.84z" fill="currentColor"/></svg>
+                    <span>Home Brand</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. Apparel / Clothes Design Mockups Panel -->
+        <div class="tool-panel" id="apparel-panel">
+            <div class="panel-title">Clothes & Apparels</div>
+            <div class="preset-grid">
+                <div class="preset-card" data-type="logo" data-svg='<svg viewBox="0 0 24 24"><path d="M16 3l4 4-3 2v12H7V9l-3-2 4-4c1.5 1.5 3 2 5 2s3.5-.5 5-2z" fill="none" stroke="currentColor" stroke-width="2"/></svg>'>
+                    <svg viewBox="0 0 24 24"><path d="M16 3l4 4-3 2v12H7V9l-3-2 4-4c1.5 1.5 3 2 5 2s3.5-.5 5-2z" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+                    <span>T-Shirt Outline</span>
+                </div>
+                <div class="preset-card" data-type="logo" data-svg='<svg viewBox="0 0 24 24"><path d="M6 2l3 2v3l-3 2V2zm12 0l-3 2v3l3 2V2zM4 9l2 13h12l2-13H4z" fill="none" stroke="currentColor" stroke-width="2"/></svg>'>
+                    <svg viewBox="0 0 24 24"><path d="M6 2l3 2v3l-3 2V2zm12 0l-3 2v3l3 2V2zM4 9l2 13h12l2-13H4z" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+                    <span>Hoodie Outline</span>
+                </div>
+                <div class="preset-card" data-type="logo" data-svg='<svg viewBox="0 0 24 24"><path d="M6 2h12l2 6H4l2-6zM4 10h16l-1.5 11h-13L4 10z" fill="none" stroke="currentColor" stroke-width="2"/></svg>'>
+                    <svg viewBox="0 0 24 24"><path d="M6 2h12l2 6H4l2-6zM4 10h16l-1.5 11h-13L4 10z" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+                    <span>Cap / Hat</span>
+                </div>
+                <div class="preset-card" data-type="logo" data-svg='<svg viewBox="0 0 24 24"><path d="M4 4h16v4H4V4zm2 6h12v10H6V10z" fill="none" stroke="currentColor" stroke-width="2"/></svg>'>
+                    <svg viewBox="0 0 24 24"><path d="M4 4h16v4H4V4zm2 6h12v10H6V10z" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+                    <span>Bag / Tote</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 5. Image Upload Panel -->
+        <div class="tool-panel" id="image-panel">
+            <div class="panel-title">Add Image / Photo</div>
+            <div class="control-group">
+                <label>Upload Image from Phone</label>
+                <div class="file-upload-wrapper">
+                    <button class="btn" style="width: 100%;">Browse Gallery</button>
+                    <input type="file" id="image-upload" accept="image/*">
+                </div>
+            </div>
+            <div class="control-group" style="margin-top: 10px;">
+                <label style="font-size: 0.7rem; color: var(--text-muted);">Tip: You can upload your own photos, transparent PNGs, or brand graphics to place directly on your logo or clothes design!</label>
+            </div>
+        </div>
+
+        <!-- 6. Colors Panel -->
         <div class="tool-panel" id="colors-panel">
             <div class="panel-title">Color Palette</div>
             <div class="control-group">
-                <label>Select Accent / Element Color</label>
+                <label>Element / Text Color</label>
                 <div class="color-grid" id="color-grid">
                     <div class="color-swatch active" style="background: #0f172a;" data-color="#0f172a"></div>
                     <div class="color-swatch" style="background: #6366f1;" data-color="#6366f1"></div>
@@ -437,58 +672,39 @@
             </div>
         </div>
 
-        <!-- 3. Logos Panel -->
-        <div class="tool-panel" id="logos-panel">
-            <div class="panel-title">Ready-Made Logos</div>
-            <div class="preset-grid">
-                <div class="preset-card" data-type="logo" data-svg='<svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>'>
-                    <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
-                    <span>Tech Crown</span>
-                </div>
-                <div class="preset-card" data-type="logo" data-svg='<svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>'>
-                    <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-                    <span>Fashion Heart</span>
-                </div>
-                <div class="preset-card" data-type="logo" data-svg='<svg viewBox="0 0 24 24"><path d="M12 3L1 9l4 2.18v6L12 21l7-3.82v-6l2-1.09V17h2V9L12 3zm6.82 6L12 12.72 5.18 9 12 5.28 18.82 9zM17 15.99l-5 2.73-5-2.73v-3.72L12 15l5-2.73v3.72z"/></svg>'>
-                    <svg viewBox="0 0 24 24"><path d="M12 3L1 9l4 2.18v6L12 21l7-3.82v-6l2-1.09V17h2V9L12 3zm6.82 6L12 12.72 5.18 9 12 5.28 18.82 9zM17 15.99l-5 2.73-5-2.73v-3.72L12 15l5-2.73v3.72z"/></svg>
-                    <span>Layer Brand</span>
-                </div>
-                <div class="preset-card" data-type="logo" data-svg='<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>'>
-                    <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
-                    <span>Global Globe</span>
+        <!-- 7. Transform & Resize Panel -->
+        <div class="tool-panel" id="transform-panel">
+            <div class="panel-title">Advanced Transformations</div>
+            <div class="control-group">
+                <label>Element Scale / Size</label>
+                <div class="range-slider">
+                    <input type="range" id="scale-range" min="0.5" max="3" step="0.1" value="1">
+                    <span class="value-display" id="val-scale">1.0x</span>
                 </div>
             </div>
-        </div>
-
-        <!-- 4. Shapes Panel -->
-        <div class="tool-panel" id="shapes-panel">
-            <div class="panel-title">Shapes, Lines & Outlines</div>
-            <div class="preset-grid">
-                <div class="preset-card" data-type="shape" data-svg='<svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" fill="none" stroke="currentColor" stroke-width="2"/></svg>'>
-                    <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" fill="none" stroke="currentColor" stroke-width="2"/></svg>
-                    <span>Square Box</span>
-                </div>
-                <div class="preset-card" data-type="shape" data-svg='<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/></svg>'>
-                    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/></svg>
-                    <span>Circle Outline</span>
-                </div>
-                <div class="preset-card" data-type="shape" data-svg='<svg viewBox="0 0 24 24"><polygon points="12 2 22 20 2 20" fill="none" stroke="currentColor" stroke-width="2"/></svg>'>
-                    <svg viewBox="0 0 24 24"><polygon points="12 2 22 20 2 20" fill="none" stroke="currentColor" stroke-width="2"/></svg>
-                    <span>Triangle Angle</span>
-                </div>
-                <div class="preset-card" data-type="shape" data-svg='<svg viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12" stroke="currentColor" stroke-width="3"/></svg>'>
-                    <svg viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12" stroke="currentColor" stroke-width="3"/></svg>
-                    <span>Divider Line</span>
+            <div class="control-group">
+                <label>Rotation Angle</label>
+                <div class="range-slider">
+                    <input type="range" id="rotate-range" min="0" max="360" value="0">
+                    <span class="value-display" id="val-rotate">0°</span>
                 </div>
             </div>
+            <button class="btn btn-outline" id="duplicate-btn" style="margin-top: 5px;">Duplicate Selected</button>
+            <button class="btn btn-outline" id="delete-btn" style="border-color: #ef4444; color: #ef4444; margin-top: 5px;">Delete Element</button>
         </div>
 
         <!-- Workspace Area -->
         <div class="workspace" id="workspace">
             <div class="canvas-container" id="canvas">
                 <!-- Default Initial Element -->
-                <div class="canvas-element selected" style="top: 200px; left: 120px;" id="default-element">
+                <div class="canvas-element selected" style="top: 160px; left: 100px;" id="default-element" data-rotate="0" data-scale="1">
                     <span class="canvas-text" style="font-family: 'Poppins', sans-serif; color: #0f172a;">Mimi Design</span>
+                </div>
+                
+                <!-- Floating element action bar -->
+                <div class="element-action-bar" id="element-action-bar">
+                    <button class="action-icon-btn" id="bar-dup">Copy</button>
+                    <button class="action-icon-btn delete" id="bar-del">Delete</button>
                 </div>
             </div>
         </div>
@@ -512,10 +728,11 @@
 
         // Workspace elements & selection handling
         const canvas = document.getElementById('canvas');
+        const elementActionBar = document.getElementById('element-action-bar');
         let activeElement = document.getElementById('default-element');
         let currentColor = '#0f172a';
 
-        // Make elements selectable & draggable inside canvas
+        // Make elements draggable, position update
         function makeDraggable(element) {
             let isDragging = false;
             let startX, startY;
@@ -540,12 +757,14 @@
                 if (!isDragging) return;
                 element.style.left = (e.clientX - startX) + 'px';
                 element.style.top = (e.clientY - startY) + 'px';
+                updateActionBarPosition();
             });
 
             window.addEventListener('touchmove', (e) => {
                 if (!isDragging) return;
                 element.style.left = (e.touches[0].clientX - startX) + 'px';
                 element.style.top = (e.touches[0].clientY - startY) + 'px';
+                updateActionBarPosition();
             });
 
             window.addEventListener('mouseup', () => { isDragging = false; });
@@ -556,9 +775,26 @@
             document.querySelectorAll('.canvas-element').forEach(item => item.classList.remove('selected'));
             el.classList.add('selected');
             activeElement = el;
+            
+            // Sync sliders with selected element state if possible
+            if(el.dataset.rotate) {
+                document.getElementById('rotate-range').value = el.dataset.rotate;
+                document.getElementById('val-rotate').textContent = el.dataset.rotate + '°';
+            }
+            if(el.dataset.scale) {
+                document.getElementById('scale-range').value = el.dataset.scale;
+                document.getElementById('val-scale').textContent = el.dataset.scale + 'x';
+            }
+            updateActionBarPosition();
+        }
+
+        function updateActionBarPosition() {
+            if (!activeElement) return;
+            elementActionBar.classList.add('active');
         }
 
         document.querySelectorAll('.canvas-element').forEach(makeDraggable);
+        selectElement(document.getElementById('default-element'));
 
         // Add Text Feature
         const textInput = document.getElementById('text-input');
@@ -569,9 +805,11 @@
 
         addTextBtn.addEventListener('click', () => {
             const newEl = document.createElement('div');
-            newEl.className = 'canvas-element selected';
-            newEl.style.top = '150px';
-            newEl.style.left = '150px';
+            newEl.className = 'canvas-element';
+            newEl.style.top = '140px';
+            newEl.style.left = '120px';
+            newEl.dataset.rotate = '0';
+            newEl.dataset.scale = '1';
             
             const span = document.createElement('span');
             span.className = 'canvas-text';
@@ -587,7 +825,7 @@
             selectElement(newEl);
         });
 
-        // Live text updating if active element is text
+        // Live updating active text
         textInput.addEventListener('input', () => {
             if (activeElement && activeElement.querySelector('.canvas-text')) {
                 activeElement.querySelector('.canvas-text').textContent = textInput.value;
@@ -600,15 +838,17 @@
             }
         });
 
-        fontSizeRange.addEventListener('input', () => {
+        fontSizeRange.addEventListener('input', (e) => {
+            document.getElementById('val-font-size').textContent = e.target.value + 'px';
             if (activeElement && activeElement.querySelector('.canvas-text')) {
-                activeElement.querySelector('.canvas-text').style.fontSize = fontSizeRange.value + 'px';
+                activeElement.querySelector('.canvas-text').style.fontSize = e.target.value + 'px';
             }
         });
 
-        textOpacityRange.addEventListener('input', () => {
+        textOpacityRange.addEventListener('input', (e) => {
+            document.getElementById('val-opacity').textContent = Math.round(e.target.value * 100) + '%';
             if (activeElement) {
-                activeElement.style.opacity = textOpacityRange.value;
+                activeElement.style.opacity = e.target.value;
             }
         });
 
@@ -637,18 +877,20 @@
             });
         });
 
-        // Preset Logos & Shapes functionality
+        // Presets (Shapes, Logos, Apparel)
         const presetCards = document.querySelectorAll('.preset-card');
         presetCards.forEach(card => {
             card.addEventListener('click', () => {
                 const svgContent = card.getAttribute('data-svg');
                 const newEl = document.createElement('div');
-                newEl.className = 'canvas-element selected';
-                newEl.style.top = '150px';
-                newEl.style.left = '180px';
-                newEl.style.width = '100px';
-                newEl.style.height = '100px';
+                newEl.className = 'canvas-element';
+                newEl.style.top = '130px';
+                newEl.style.left = '140px';
+                newEl.style.width = '120px';
+                newEl.style.height = '120px';
                 newEl.style.color = currentColor;
+                newEl.dataset.rotate = '0';
+                newEl.dataset.scale = '1';
                 newEl.innerHTML = svgContent;
 
                 canvas.appendChild(newEl);
@@ -657,15 +899,106 @@
             });
         });
 
-        // Clear & Export actions
+        // Image Upload Feature
+        const imageUpload = document.getElementById('image-upload');
+        imageUpload.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const newEl = document.createElement('div');
+                newEl.className = 'canvas-element';
+                newEl.style.top = '120px';
+                newEl.style.left = '120px';
+                newEl.style.width = '140px';
+                newEl.style.height = '140px';
+                newEl.dataset.rotate = '0';
+                newEl.dataset.scale = '1';
+
+                const img = document.createElement('img');
+                img.src = event.target.result;
+                newEl.appendChild(img);
+
+                canvas.appendChild(newEl);
+                makeDraggable(newEl);
+                selectElement(newEl);
+            }
+            reader.readAsDataURL(file);
+        });
+
+        // Transform controls (Scale, Rotate, Duplicate, Delete)
+        const scaleRange = document.getElementById('scale-range');
+        const rotateRange = document.getElementById('rotate-range');
+
+        scaleRange.addEventListener('input', (e) => {
+            const val = e.target.value;
+            document.getElementById('val-scale').textContent = val + 'x';
+            if (activeElement) {
+                activeElement.dataset.scale = val;
+                applyTransform(activeElement);
+            }
+        });
+
+        rotateRange.addEventListener('input', (e) => {
+            const val = e.target.value;
+            document.getElementById('val-rotate').textContent = val + '°';
+            if (activeElement) {
+                activeElement.dataset.rotate = val;
+                applyTransform(activeElement);
+            }
+        });
+
+        function applyTransform(el) {
+            const scale = el.dataset.scale || 1;
+            const rotate = el.dataset.rotate || 0;
+            el.style.transform = `scale(${scale}) rotate(${rotate}deg)`;
+        }
+
+        function deleteActiveElement() {
+            if (activeElement && activeElement !== document.getElementById('default-element')) {
+                activeElement.remove();
+                elementActionBar.classList.remove('active');
+                activeElement = null;
+            } else if (activeElement) {
+                activeElement.style.display = 'none';
+                elementActionBar.classList.remove('active');
+            }
+        }
+
+        function duplicateActiveElement() {
+            if (!activeElement) return;
+            const clone = activeElement.cloneNode(true);
+            clone.style.top = (parseInt(clone.style.top || 100) + 20) + 'px';
+            clone.style.left = (parseInt(clone.style.left || 100) + 20) + 'px';
+            canvas.appendChild(clone);
+            makeDraggable(clone);
+            selectElement(clone);
+        }
+
+        document.getElementById('delete-btn').addEventListener('click', deleteActiveElement);
+        document.getElementById('bar-del').addEventListener('click', deleteActiveElement);
+        document.getElementById('duplicate-btn').addEventListener('click', duplicateActiveElement);
+        document.getElementById('bar-dup').addEventListener('click', duplicateActiveElement);
+
+        // Clear & Export PNG
         document.getElementById('clear-btn').addEventListener('click', () => {
-            if (confirm('Clear your entire design workspace?')) {
-                canvas.innerHTML = '';
+            if (confirm('Clear your design workspace?')) {
+                canvas.innerHTML = '<div class="element-action-bar" id="element-action-bar"><button class="action-icon-btn" id="bar-dup">Copy</button><button class="action-icon-btn delete" id="bar-del">Delete</button></div>';
+                activeElement = null;
             }
         });
 
         document.getElementById('export-btn').addEventListener('click', () => {
-            alert('Your Mimi Designer canvas is ready! (Tip: Take a screenshot or deploy your code to GitHub Pages to test live on your phone.)');
+            // Temporarily hide selection borders and action bar for clean export
+            document.querySelectorAll('.canvas-element').forEach(el => el.classList.remove('selected'));
+            elementActionBar.classList.remove('active');
+
+            html2canvas(canvas, { backgroundColor: null, scale: 2 }).then(canvasSnapshot => {
+                const link = document.createElement('a');
+                link.download = 'mimi-design.png';
+                link.href = canvasSnapshot.toDataURL('image/png');
+                link.click();
+            });
         });
     </script>
 </body>
